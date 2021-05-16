@@ -14,7 +14,7 @@ router.post('/signup', (req, res) => {
           .json({
             errorMessage: 'Please enter username, email and password'
           });
-        return;  
+        return;   
     }
     const myRegex = new RegExp(/^[a-z0-9](?!.*?[^\na-z0-9]{2})[^\s@]+@[^\s@]+\.[^\s@]+[a-z0-9]$/);
     if (!myRegex.test(email)) {

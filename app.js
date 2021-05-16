@@ -38,6 +38,11 @@ app.use(
 const allRoutes = require('./routes');
 app.use('/api', allRoutes);
 
+const noteRoutes = require("./routes/note.routes")
+app.use("/api", noteRoutes)
+
+const userRoutes = require("./routes/user.routes")
+app.use("/api", userRoutes)
 
 
 // ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes
