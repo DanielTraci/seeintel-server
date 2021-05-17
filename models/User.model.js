@@ -13,7 +13,8 @@ const UserSchema = new Schema({
   password: {
     type: String,
     required: true
-  }
+  },
+  myDomain: [{type: Schema.Types.ObjectId, ref:'Domain'}]
 });
 
 const UserModel = model("User", UserSchema);

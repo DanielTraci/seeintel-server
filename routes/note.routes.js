@@ -17,7 +17,7 @@ router.get('/notes', (req, res) => {
 
 router.post('/create', (req, res) => {  
      const {myNote} = req.body;
-     console.log(myNote)
+
      NoteModel.create({myNote})
           .then((response) => {
                res.status(200).json(response)              
@@ -65,7 +65,7 @@ router.patch('/notes/:id', (req, res) => {
                res.status(200).json(response)
           })
           .catch((err) => {
-               console.log(err)
+               
                res.status(500).json({
                     error: 'Something went wrong',
                     message: err

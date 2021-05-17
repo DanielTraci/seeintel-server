@@ -5,7 +5,7 @@ const SavedResultSchema = new Schema({
     type: String,
   },
   user: {type: Schema.Types.ObjectId, ref: 'User'},
-  domain: [{type: Schema.Types.ObjectId, ref:'Domain'}]
+  myDomain: [{type: Schema.Types.ObjectId, ref:'Domain'}]
 });
 
 const SavedResult = model("SavedResult", SavedResultSchema);
