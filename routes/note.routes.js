@@ -17,8 +17,8 @@ router.get('/notes', (req, res) => {
 
 router.post('/create', (req, res) => {  
      const {myNote} = req.body;
-
-     NoteModel.create({myNote})
+     let userId = req.session.loggedInUser._id
+     NoteModel.create({myNote, user: userId})
           .then((response) => {
                res.status(200).json(response)              
           })

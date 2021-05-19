@@ -8,6 +8,7 @@ const DomainSchema = new Schema({
         type: Schema.Types.Mixed
     },
     myNote: [{type: Schema.Types.ObjectId, ref: 'Note'}],
+    
 });
 
 const DomainModel = model("Domain", DomainSchema);

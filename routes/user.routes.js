@@ -1,9 +1,7 @@
 const router = require("express").Router();
 const NoteModel = require("../models/Note.model")
 const DomainModel = require("../models/Domain.model")
-const SavedResultModel = require("../models/SavedResult.model")
 const UserModel = require("../models/User.model")
-
 
 
 // Render User Dashboard that shows all 
@@ -29,25 +27,28 @@ router.get("/user", (req, res, next) => {
      }
 });
 
-router.get('/domains', (req, res) => {
-     DomainModel.find()
-          .then((response) => {
-               res.status(200).json(response)
-          })
-          .catch((err) => {
-          res.status(500).json({
-               error: 'Something went wrong',
-               message: err
-               })
-          })         
+router.get('/domains', (req, res, next) => {
+     let userId = req.session.loggedInUser._id
+     UserModel.findById(userId)
+     .populate("myDomain")
+          .then((result) => {
+               res.status(200).json(result.myDomain)
+          }).catch((err) => {             
+          });
 })
 
-router.post('/domains/create', (req, res) => {
+router.post('/domains/create', (req, res, next) => {
      const { myDomain , data} = req.body;
+     let userId = req.session.loggedInUser._id
      DomainModel.create({ myDomain , data: JSON.stringify(data)})
-          .populate('myNote')
           .then((response) => {
-               res.status(200).json(response)
+               UserModel.findByIdAndUpdate(userId, {$push: {myDomain: response._id}})
+               .then(() => {
+                    res.status(200).json(response)
+               }).catch((err) => {
+                    next()
+               });
+               
           })
           .catch((err) => {
                res.status(500).json({
@@ -58,7 +59,7 @@ router.post('/domains/create', (req, res) => {
 })
 
 
-router.get('/domains/:id', (req, res) => {
+router.get('/domains/:id', (req, res, next) => {
      const {id} = req.params
      DomainModel.findById(id)
      .populate("myNote")
@@ -73,7 +74,23 @@ router.get('/domains/:id', (req, res) => {
           })
 })
 
-router.delete('/domains/:id', (req, res) => {
+router.patch('/domains/:id', (req, res, next) => {
+     let id = req.params.id
+     const {myNote} = req.body;
+     DomainModel.findByIdAndUpdate(id, {$push: {myNote: myNote}}, {new: true})
+          .populate("myNote")
+          .then((response) => {
+               res.status(200).json(response)
+          })
+          .catch((err) => {            
+               res.status(500).json({
+                    error: 'Something went wrong',
+                    message: err
+               })
+          }) 
+})
+
+router.delete('/domains/:id', (req, res, next) => {
      DomainModel.findByIdAndDelete(req.params.id)
           .then((response) => {
                res.status(200).json(response)
@@ -85,6 +102,5 @@ router.delete('/domains/:id', (req, res) => {
                })
           })
 })
-
 
 module.exports = router;
