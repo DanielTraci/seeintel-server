@@ -48,7 +48,6 @@ router.post('/domains/create', (req, res, next) => {
                }).catch((err) => {
                     next()
                });
-               
           })
           .catch((err) => {
                res.status(500).json({
@@ -82,7 +81,8 @@ router.patch('/domains/:id', (req, res, next) => {
           .then((response) => {
                res.status(200).json(response)
           })
-          .catch((err) => {            
+          .catch((err) => {  
+               console.log(err)          
                res.status(500).json({
                     error: 'Something went wrong',
                     message: err
