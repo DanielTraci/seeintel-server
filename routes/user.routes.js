@@ -31,7 +31,7 @@ router.get("/user", (req, res, next) => {
 
 
 
-
+// Retrieve the data from the API of VirusTotal
 router.get('/domainsearch/:result', (req, res, next) => {
      let websiteDomain = req.params.result
      axios.get(`https://www.virustotal.com/api/v3/domains/${websiteDomain}`, { headers: { "x-apikey": API_KEY } })
