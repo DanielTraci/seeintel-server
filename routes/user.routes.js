@@ -2,6 +2,8 @@ const router = require("express").Router();
 const NoteModel = require("../models/Note.model")
 const DomainModel = require("../models/Domain.model")
 const UserModel = require("../models/User.model")
+const axios = require('axios')
+let API_KEY = process.env.VIRUSTOTAl_API_KEY
 
 
 // Render User Dashboard that shows all 
@@ -27,27 +29,40 @@ router.get("/user", (req, res, next) => {
      }
 });
 
+
+
+
+router.get('/domainsearch/:result', (req, res, next) => {
+     let websiteDomain = req.params.result
+     axios.get(`https://www.virustotal.com/api/v3/domains/${websiteDomain}`, { headers: { "x-apikey": API_KEY } })
+          .then((result) => {
+               res.status(200).json(result.data)
+          }).catch((err) => {
+          });
+})
+
+
 router.get('/domains', (req, res, next) => {
      let userId = req.session.loggedInUser._id
      UserModel.findById(userId)
-     .populate("myDomain")
+          .populate("myDomain")
           .then((result) => {
                res.status(200).json(result.myDomain)
-          }).catch((err) => {             
+          }).catch((err) => {
           });
 })
 
 router.post('/domains/create', (req, res, next) => {
-     const { myDomain , data} = req.body;
+     const { myDomain, data } = req.body;
      let userId = req.session.loggedInUser._id
-     DomainModel.create({ myDomain , data: JSON.stringify(data)})
+     DomainModel.create({ myDomain, data: JSON.stringify(data) })
           .then((response) => {
-               UserModel.findByIdAndUpdate(userId, {$push: {myDomain: response._id}})
-               .then(() => {
-                    res.status(200).json(response)
-               }).catch((err) => {
-                    next()
-               });
+               UserModel.findByIdAndUpdate(userId, { $push: { myDomain: response._id } })
+                    .then(() => {
+                         res.status(200).json(response)
+                    }).catch((err) => {
+                         next()
+                    });
           })
           .catch((err) => {
                res.status(500).json({
@@ -59,9 +74,9 @@ router.post('/domains/create', (req, res, next) => {
 
 
 router.get('/domains/:id', (req, res, next) => {
-     const {id} = req.params
+     const { id } = req.params
      DomainModel.findById(id)
-     .populate("myNote")
+          .populate("myNote")
           .then((response) => {
                res.status(200).json(response)
           })
@@ -75,19 +90,19 @@ router.get('/domains/:id', (req, res, next) => {
 
 router.patch('/domains/:id', (req, res, next) => {
      let id = req.params.id
-     const {myNote} = req.body;
-     DomainModel.findByIdAndUpdate(id, {$push: {myNote: myNote}}, {new: true})
+     const { myNote } = req.body;
+     DomainModel.findByIdAndUpdate(id, { $push: { myNote: myNote } }, { new: true })
           .populate("myNote")
           .then((response) => {
                res.status(200).json(response)
           })
-          .catch((err) => {  
-               console.log(err)          
+          .catch((err) => {
+               console.log(err)
                res.status(500).json({
                     error: 'Something went wrong',
                     message: err
                })
-          }) 
+          })
 })
 
 router.delete('/domains/:id', (req, res, next) => {
